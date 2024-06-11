@@ -48,31 +48,32 @@ def lr_schedule(epoch):
     return lr
 
 Data Preparation
+================
 Extract ZIP File
+----------------
 
 Extract the dataset from a ZIP file to a specified directory.
 
     ZipFile: The dataset is compressed, so we need to extract it.
     This step prepares the data for further processing.
 
-python
-
 with zipfile.ZipFile("C:\\Users\\DEBBATI SUDHEER\\PycharmProjects\\coding\\archive(3).zip", 'r') as zip_ref:
     zip_ref.extractall("dataset")
 
 Define Directories
+-------------------
 
 Set the directories for training and testing data.
 
     TRAIN_DIR: Directory where the training images are stored.
     TEST_DIR: Directory where the testing images are stored.
 
-python
 
 TRAIN_DIR = 'dataset/train'
 TEST_DIR = 'dataset/test'
 
 Data Augmentation and Generators
+--------------------------------
 
 Prepare data augmentation for training and rescaling for testing.
 
@@ -92,7 +93,6 @@ Applies various transformations to the training images.
     horizontal_flip: Randomly flips images horizontally.
     fill_mode: Fills in missing pixels after transformations.
 
-python
 
 train_datagen = ImageDataGenerator(
     rescale=1./255,
@@ -110,17 +110,16 @@ Only rescale the images for testing.
 
     Rescale: Normalizes pixel values to the range [0, 1] for consistency with training images.
 
-python
 
 test_datagen = ImageDataGenerator(rescale=1./255)
 
 Data Generators
+----------------
 
 Generate batches of augmented data for training and rescaled data for testing.
 
     flow_from_directory: Generates batches of images directly from the directories.
 
-python
 
 train_generator = train_datagen.flow_from_directory(
     TRAIN_DIR,
@@ -137,7 +136,9 @@ test_generator = test_datagen.flow_from_directory(
     class_mode='categorical')
 
 Model Architecture
+==================
 Define Model
+-------------
 
 Build a CNN with multiple layers for feature extraction and classification.
 
@@ -149,7 +150,6 @@ Build a CNN with multiple layers for feature extraction and classification.
     Flatten: Converts the 2D matrices to a 1D vector.
     Dense: Fully connected layer for classification.
 
-python
 
 model = Sequential([
     Conv2D(32, (3, 3), activation='relu', input_shape=(IMG_SIZE[0], IMG_SIZE[1], 1), kernel_regularizer=l2(0.01)),
@@ -180,6 +180,7 @@ model = Sequential([
 ])
 
 Compile Model
+--------------
 
 Configure the model for training.
 
@@ -187,14 +188,15 @@ Configure the model for training.
     categorical_crossentropy: Loss function for multi-class classification.
     metrics: List of metrics to be evaluated during training and testing.
 
-python
 
 model.compile(optimizer=SGD(learning_rate=lr_schedule(0), momentum=0.9),
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
 Training
+=========
 Callbacks
+---------
 
 Additional functionalities to improve training.
 
@@ -202,20 +204,19 @@ Additional functionalities to improve training.
     EarlyStopping: Stops training when a monitored metric has stopped improving.
     ReduceLROnPlateau: Reduces the learning rate when a metric has stopped improving.
 
-python
 
 lr_scheduler = LearningRateScheduler(lr_schedule)
 early_stopping = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
 reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=3)
 
 Train Model
+-----------
 
 Train the model using the training data and validate it using the validation data.
 
     steps_per_epoch: Number of steps (batches of samples) in one epoch.
     validation_steps: Number of steps (batches of samples) to validate.
 
-python
 
 history = model.fit(
     train_generator,
@@ -227,25 +228,26 @@ history = model.fit(
 )
 
 Evaluation
+===========
 Evaluate Model
+--------------
 
 Evaluate the model's performance on the test data.
 
     test_loss: Loss on the test data.
     test_accuracy: Accuracy on the test data.
 
-python
 
 test_loss, test_accuracy = model.evaluate(test_generator)
 print(f'Test Loss: {test_loss}, Test Accuracy: {test_accuracy}')
 
 Plot Accuracy and Loss
+-----------------------
 
 Visualize the training and validation accuracy and loss.
 
     history.history: Contains per-epoch loss and accuracy data.
 
-python
 
 plt.figure(figsize=(12, 4))
 plt.subplot(1, 2, 1)
@@ -267,13 +269,13 @@ plt.legend(['Train', 'Validation'], loc='upper left')
 plt.show()
 
 Confusion Matrix
+-----------------
 
 Visualize the model's predictions compared to actual labels.
 
     confusion_matrix: Computes a confusion matrix.
     ConfusionMatrixDisplay: Displays the confusion matrix.
 
-python
 
 predictions = model.predict(test_generator)
 y_pred = np.argmax(predictions, axis=1)
@@ -285,24 +287,24 @@ cmd.plot(cmap=plt.cm.Blues)
 plt.show()
 
 Classification Report
+--------------------
 
 Detailed report showing the precision, recall, and F1-score for each class.
 
     classification_report: Generates a classification report.
 
-python
 
 report = classification_report(y_true, y_pred, target_names=test_generator.class_indices.keys())
 print(report)
 
 Visualization of Sample Predictions
+------------------------------------
 
 Visualize some prediction samples with their actual and predicted labels.
 
     next(test_generator): Fetches a batch of images and labels.
     model.predict: Predicts the class probabilities.
 
-python
 
 sample_images, sample_labels = next(test_generator)
 sample_preds = model.predict(sample_images)
