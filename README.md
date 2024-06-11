@@ -1,5 +1,5 @@
-Facial Emotion Recognition Model Documentation
-Overview
+Facial Emotion Recognition Model Documentation Overview
+=======================================================
 
 This document explains how to build, train, and evaluate a Convolutional Neural Network (CNN) for recognizing facial emotions. The model classifies images into one of seven emotion categories.
 Requirements
@@ -11,16 +11,18 @@ Requirements
     Scikit-learn: Machine learning tools.
 
 Setup
+======
 Define Constants
+-----------------
 
 Define the image size, batch size, number of epochs, and number of emotion categories.
+--------------------------------------------------------------------------------------
 
     IMG_SIZE: Size to which all images will be resized. We use (48, 48) to keep the model lightweight and fast.
     BATCH_SIZE: Number of images processed together in one pass. We use 32 to balance between memory use and training speed.
     EPOCHS: Number of complete passes through the training dataset. We use 30 for adequate training.
     NUM_CLASSES: Number of emotion categories. Here, 7 represents emotions like happy, sad, etc.
 
-python
 
 IMG_SIZE = (48, 48)
 BATCH_SIZE = 32
@@ -28,13 +30,12 @@ EPOCHS = 30
 NUM_CLASSES = 7
 
 Learning Rate Schedule
+----------------------
 
 A function to adjust the learning rate during training to improve performance.
 
     Learning Rate: Controls the adjustment of the model's weights.
     This function lowers the learning rate at specific epochs to fine-tune the model as it trains.
-
-python
 
 def lr_schedule(epoch):
     lr = 1e-3
